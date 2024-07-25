@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-time Speech Transcription with Summary</title>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Speech Transcription with Summary</h1>
+        <label for="language">Select Language:</label>
+        <select id="language">
+            <option value="en-US">English (US)</option>
+            <option value="vi-VN">Vietnamese (VN)</option>
+        </select>
+        <button id="start-button">Start</button>
+        <button id="stop-button">Stop</button>
+        <button id="summarize-button">Summarize</button>
+        <div id="transcript"></div>
+        <div id="summary" class="summary"></div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const stopButton = document.getElementById('stop-button');
+        const summarizeButton = document.getElementById('summarize-button');
+        const transcriptDiv = document.getElementById('transcript');
+        const summaryDiv = document.getElementById('summary');
+        const languageSelect = document.getElementById('language');
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        let finalTranscript = '';
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            transcriptDiv.innerHTML = `<p>${finalTranscript}</p><p class="interim">${interimTranscript}</p>`;
+        };
+
+        startButton.addEventListener('click', () => {
+            recognition.lang = languageSelect.value;
+            recognition.start();
+        });
+        
+        stopButton.addEventListener('click', () => {
+            recognition.stop();
+        });
+
+        summarizeButton.addEventListener('click', async () => {
+            try {
+                const summary = await getSummary(finalTranscript);
+                summaryDiv.innerHTML = `<h2>Summary</h2><p>${summary}</p>`;
+            } catch (error) {
+                console.error('Error getting summary:', error);
+                summaryDiv.innerHTML = `<p style="color:red;">Error getting summary. Please try again.</p>`;
+            }
+        });
+
+        async function getSummary(text) {
+            const response = await fetch('api/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error summarizing text');
+            }
+
+            const data = await response.json();
+            return data.summary;
+        }
+    </script>
+</body>
+</html>
