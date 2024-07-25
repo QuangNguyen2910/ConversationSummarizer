@@ -3,7 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <title>Real-time Speech Transcription with Summary</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #transcript {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            height: 150px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .summary {
+            background-color: #e0f7fa;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #00acc1;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .interim {
+            color: gray;
+        }
+
+        label, select {
+            width: 100%;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        @media (min-width: 600px) {
+            button {
+                width: auto;
+            }
+        }
+
+    </style>
 </head>
 <body>
     <div class="container">
