@@ -28,7 +28,7 @@ app.post('/summarize', async (req, res) => {
   const { text } = req.body;
 
   // Define the pre-prompt
-  const prePrompt = "Below is a raw and noisy text conversation, it could be from a meeting, a presentation or even a quick talk and may have many errors word that been translated through a model, your job is to find out the pattern of the conversation and summarize most important information from it correctly and translate it into Vietnamese:\n\n";
+  const prePrompt = "Below is a raw and noisy text conversation, it could be from a meeting, a presentation or even a quick talk and may have many errors word that been translated through a model, your job is to find out the pattern of the conversation and response with a Vietnamese summarized version of the conversation with most important information are extracted correctly:\n\n";
   
   // Combine pre-prompt with the actual text
   const textToSummarize = prePrompt + text;
