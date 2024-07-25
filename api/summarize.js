@@ -27,7 +27,10 @@ app.use(bodyParser.json());
 app.post('/summarize', async (req, res) => {
   const { text } = req.body;
 
-  const prePrompt = "Please summarize the following text:\n\n";
+  // Define the pre-prompt
+  const prePrompt = "Below is a raw and noisy text conversation, it could be from a meeting, a presentation or even a quick talk and may have many errors word that been translated through a model, your job is to find out the pattern of the conversation and summarize most important information from it correctly:\n\n";
+  
+  // Combine pre-prompt with the actual text
   const textToSummarize = prePrompt + text;
 
   console.log('Received text for summarization:', text);
