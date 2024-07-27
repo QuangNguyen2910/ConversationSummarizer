@@ -83,7 +83,6 @@
                 width: auto;
             }
         }
-
     </style>
 </head>
 <body>
@@ -93,6 +92,15 @@
         <select id="language">
             <option value="en-US">English (US)</option>
             <option value="vi-VN">Vietnamese (VN)</option>
+        </select>
+        <label for="scale">Select the scale of the conversation:</label>
+        <select id="scale">
+            <option value="Meeting">Meeting</option>
+            <option value="Lecture">Lecture</option>
+            <option value="Interview">Interview</option>
+            <option value="Conversation">Normal conversation</option>
+            <option value="Presentation">Presentation</option>
+        
         </select>
         <button id="start-button">Start</button>
         <button id="stop-button">Stop</button>
@@ -108,6 +116,7 @@
         const transcriptDiv = document.getElementById('transcript');
         const summaryDiv = document.getElementById('summary');
         const languageSelect = document.getElementById('language');
+        const scaleSelect = document.getElementById('scale');
         
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
@@ -133,6 +142,7 @@
 
         startButton.addEventListener('click', () => {
             recognition.lang = languageSelect.value;
+            startAudioProcessing();
             recognition.start();
         });
         
@@ -165,6 +175,51 @@
 
             const data = await response.json();
             return data.summary;
+        }
+
+        async function startAudioProcessing() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaStreamSource(stream);
+            
+            // Create gain node to control volume
+            const gainNode = audioContext.createGain();
+            if (scaleSelect.value === "Meeting") gainNode.gain.value = 1.8;
+            else if (scaleSelect.value === "Lecture") gainNode.gain.value = 2.5;
+            else if (scaleSelect.value === "Interview") gainNode.gain.value = 1.2;
+            else if (scaleSelect.value === "Conversation") gainNode.gain.value = 1.8;
+            else if (scaleSelect.value === "Presentation") gainNode.gain.value = 2.0; // Increase the volume (default is 1.0)
+
+            // Create biquad filter node for noise reduction
+            const biquadFilter = audioContext.createBiquadFilter();
+            biquadFilter.type = 'lowpass';
+            biquadFilter.frequency.value = 1000; // Adjust this value to filter out high-frequency noise
+
+            // Create a dummy destination to prevent audio output
+            const dummyDestination = audioContext.createMediaStreamDestination();
+
+            // Connect the nodes: source -> biquadFilter -> gainNode -> dummyDestination
+            source.connect(biquadFilter);
+            biquadFilter.connect(gainNode);
+            gainNode.connect(dummyDestination);
+
+            // Use a ScriptProcessorNode to capture the audio data and feed it to SpeechRecognition
+            const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+            gainNode.connect(scriptProcessor);
+
+            scriptProcessor.onaudioprocess = function(audioProcessingEvent) {
+                const inputBuffer = audioProcessingEvent.inputBuffer;
+                const outputBuffer = audioProcessingEvent.outputBuffer;
+
+                for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+                    const inputData = inputBuffer.getChannelData(channel);
+                    const outputData = outputBuffer.getChannelData(channel);
+
+                    for (let sample = 0; sample < inputBuffer.length; sample++) {
+                        outputData[sample] = inputData[sample];
+                    }
+                }
+            };
         }
     </script>
 </body>
