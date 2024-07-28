@@ -141,6 +141,10 @@
             transcriptDiv.innerHTML = `<p>${finalTranscript}</p><p class="interim">${interimTranscript}</p>`;
         };
 
+        recognition.onend = () => {
+            recognition.start();
+        };
+
         startButton.addEventListener('click', () => {
             recognition.lang = languageSelect.value;
             startAudioProcessing();
