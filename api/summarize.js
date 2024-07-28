@@ -29,30 +29,29 @@ app.post('/summarize', async (req, res) => {
 
   // Define the pre-prompt
   const prePrompt = `
-Below is a raw and noisy text conversation, it could be from a meeting,
-a presentation or even a quick talk and may have many errors word that been translated through a model,
-your job is to find out the pattern of the conversation and response with a Vietnamese summarized version
-of the conversation with most important information are extracted correctly:
+Below is a raw and noisy text conversation. It could be from a meeting, a presentation, or a quick talk, and it may have many errors,
+especially words that have been mistranslated through a model. Your task is to identify the key points of the conversation and respond
+with a summarized version in Vietnamese, extracting the most important information accurately, we also provided an instruction below
+for easier understanding.
 
 Instruction:
-(
-    Original text:
 
-    "Hi my name is Kwan. I am an AI engineer at Google. And I am very happy today to show you my project about chatbot.
+    ## Original text:
+
+    Hi my name is Kwan. I am an AI engineer at Google. And I am very happy today to show you my project about chatbot.
     Using an open source LLM. Name. Llama three 8 billion parameter. And with this chat bot you will be able. To give it.
-    The accessibility. To. Talk to the customers. And. React on their commands like if they want to. Discord there. Products."
+    The accessibility. To. Talk to the customers. And. React on their commands like if they want to. Discord there. Products.
 
-    Summarized text:
+    ## Summarized text:
 
-    "Người thuyết trình tên là Quang, là một kỹ sư trí tuệ nhân tạo tại Google. Anh ấy đang bắt đàu giới thiệu dự án về chatbot
-    sử dụng một mô hình ngôn ngữ lớn (LLM) là Llama 3 8B để trả lời các câu hỏi của khách hàng và thực hiện yêu cầu dựa trên các câu hỏi đó."
-)
+    Người thuyết trình tên là Quang, là một kỹ sư trí tuệ nhân tạo tại Google. Anh ấy đang bắt đầu giới thiệu dự án về chatbot
+    sử dụng một mô hình ngôn ngữ lớn (LLM) là Llama 3 8B để trả lời các câu hỏi của khách hàng và thực hiện yêu cầu dựa trên các câu hỏi đó.
 
-Original text:
+## Original text:
 
 ${text}
 
-Summarized text:
+## Summarized text:
 
 `;
   
