@@ -10,7 +10,7 @@ const apiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-pro",
 });
 
 const generationConfig = {
@@ -28,10 +28,36 @@ app.post('/summarize', async (req, res) => {
   const { text } = req.body;
 
   // Define the pre-prompt
-  const prePrompt = "Below is a raw and noisy text conversation, it could be from a meeting, a presentation or even a quick talk and may have many errors word that been translated through a model, your job is to find out the pattern of the conversation and response with a Vietnamese summarized version of the conversation with most important information are extracted correctly:\n\n";
+  const prePrompt = `
+Below is a raw and noisy text conversation, it could be from a meeting,
+a presentation or even a quick talk and may have many errors word that been translated through a model,
+your job is to find out the pattern of the conversation and response with a Vietnamese summarized version
+of the conversation with most important information are extracted correctly:
+
+Instruction:
+(
+    Original text:
+
+    "Hi my name is Kwan. I am an AI engineer at Google. And I am very happy today to show you my project about chatbot.
+    Using an open source LLM. Name. Llama three 8 billion parameter. And with this chat bot you will be able. To give it.
+    The accessibility. To. Talk to the customers. And. React on their commands like if they want to. Discord there. Products."
+
+    Summarized text:
+
+    "Người thuyết trình tên là Quang, là một kỹ sư trí tuệ nhân tạo tại Google. Anh ấy đang bắt đàu giới thiệu dự án về chatbot
+    sử dụng một mô hình ngôn ngữ lớn (LLM) là Llama 3 8B để trả lời các câu hỏi của khách hàng và thực hiện yêu cầu dựa trên các câu hỏi đó."
+)
+
+Original text:
+
+${text}
+
+Summarized text:
+
+`;
   
   // Combine pre-prompt with the actual text
-  const textToSummarize = prePrompt + text;
+  const textToSummarize = prePrompt;
 
   console.log('Received text for summarization:', text);
 
@@ -44,7 +70,7 @@ app.post('/summarize', async (req, res) => {
     const result = await chatSession.sendMessage(textToSummarize);
     console.log('API response:', result);
 
-    res.json({ summary: result.response.text() });
+    res.json({ summary: result.response.text()});
   } catch (error) {
     console.error('Error summarizing text:', error);
     res.status(500).send('Error summarizing text');
